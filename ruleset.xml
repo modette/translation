@@ -1,0 +1,14 @@
+<ruleset>
+    <!-- Coding Standard -->
+    <rule ref="./vendor/ninjify/coding-standard/contributte.xml"/>
+
+    <!-- Package specific rules -->
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array" value="
+                src   => Modette\Translation,
+                tests => Tests\Modette\Translation,
+            "/>
+        </properties>
+    </rule>
+</ruleset>
