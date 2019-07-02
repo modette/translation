@@ -1,0 +1,5 @@
+parameters:
+	exceptionRules:
+		reportUnusedCatchesOfUncheckedExceptions: true
+		checkedExceptions:
+			- Modette\Exceptions\Check\CheckedException
