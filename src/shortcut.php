@@ -6,8 +6,10 @@ use Modette\Translation\TranslatorHolder;
 /** @var Translator|null $translator */
 $translator = null;
 
-function _(string $message, array $parameters, ?string $locale = null) use ($translator): string
+function _(string $message, array $parameters, ?string $locale = null): string
 {
+	global $translator;
+	
 	if ($translator === null) {
 		$translator = TranslatorHolder::getInstance()->getTranslator();
 	}
