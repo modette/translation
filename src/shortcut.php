@@ -8,7 +8,7 @@ $translator = null;
 
 function _(string $message, array $parameters, ?string $locale = null) use ($translator): string
 {
-	if ($translator = null) {
+	if ($translator === null) {
 		$translator = TranslatorHolder::getInstance()->getTranslator();
 	}
 
