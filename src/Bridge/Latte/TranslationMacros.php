@@ -39,6 +39,7 @@ final class TranslationMacros extends MacroSet
 			$node->openingCode = '<?php ob_start(function () {}) ?>' . $node->openingCode;
 			$value = 'ob_get_clean()';
 		}
+
 		return $writer->write('$_fi = new LR\FilterInfo(%var); echo %modifyContent($this->filters->filterContent("translate", $_fi, %raw))', $node->context[0], $value);
 	}
 

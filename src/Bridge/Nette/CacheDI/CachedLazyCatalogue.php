@@ -32,7 +32,6 @@ final class CachedLazyCatalogue implements Catalogue
 	private $missingTranslationMessageLocaleMap = [];
 
 	/**
-	 * @param IStorage $storage
 	 * @param string[] $loaderServiceNames
 	 */
 	public function __construct(IStorage $storage, Container $container, array $loaderServiceNames)
@@ -42,14 +41,9 @@ final class CachedLazyCatalogue implements Catalogue
 		$this->loaderServiceNames = $loaderServiceNames;
 	}
 
-	/**
-	 * @param mixed[]  $parameters
-	 * @param string[] $localeList
-	 */
-	public function getMessage(string $message, array $localeList): ?string
+	public function getMessage(string $message, string $locale): ?string
 	{
-		$preferredLocale = reset($localeList); // Get first locale from list
-		$cache = $this->cache->derive('.' . $preferredLocale);
+		$cache = $this->cache->derive('.' . $locale);
 
 		// Try get translation from cache
 		$translated = $this->cache->load($message);
@@ -60,48 +54,44 @@ final class CachedLazyCatalogue implements Catalogue
 		}
 
 		// None of loaders contains translation for given message with requested language, skip lookup
-		if ($this->missingTranslationMessageLocaleMap[$message][$preferredLocale] ?? false) {
+		if ($this->missingTranslationMessageLocaleMap[$message][$locale] ?? false) {
 			return null;
 		}
 
 		// Load translations from all loaders and all possible locales until message translation is found
+		//TODO - pouze jeden loader
 		foreach ($this->loaderServiceNames as $loaderServiceName) {
 			// Loader translations for requested language already stored, skip
-			if ($this->processedLoaderLocaleMap[$loaderServiceName][$preferredLocale] ?? false) {
+			if ($this->processedLoaderLocaleMap[$loaderServiceName][$locale] ?? false) {
 				continue;
 			}
 
 			$loader = $this->getLoader($loaderServiceName);
 
-			foreach ($localeList as $locale) {
-				foreach ($loader->loadAllMessages($locale) as $key => $translation) {
-					//TODO - následující se vylučují
-					// - cache se ukládá jen pro hlavní jazyk - ukládat i pro načtené alternativy? (vytvořit derivát cache, zanést loader do mapy pro oba jazyky)
-					// - obalit loader do kešovacího array loaderu? loader se bude volat víckrát za request, pokud se budou načítat překlady pro více $preferredLanguage
-					$cache->save($key, $translation);
+			foreach ($loader->loadAllMessages($locale) as $key => $translation) {
+				//TODO - obalit loader do kešovacího array loaderu? loader se bude volat víckrát za request, pokud se budou načítat překlady pro více $locale
+				//TODO - při přidání nového překladu se cache pokusí uložit znova
+				$cache->save($key, $translation);
 
-					// Loaded key is same as requested message, use it
-					if ($key === $message) {
-						$translated = $translation;
-					}
+				// Loaded key is same as requested message, use it
+				if ($key === $message) {
+					$translated = $translation;
 				}
+			}
 
-				// Loader translations for requested language stored, skip at next run
-				$this->processedLoaderLocaleMap[$loaderServiceName][$preferredLocale] = true;
+			// Loader translations for requested language stored, skip at next run
+			$this->processedLoaderLocaleMap[$loaderServiceName][$locale] = true;
 
-				// All messages from given loader for current language are loaded and translation was found - skip other until needed
-				if ($translated !== null) {
-					return $translated;
-				}
+			// All messages from given loader for current language are loaded and translation was found - skip other until needed
+			if ($translated !== null) {
+				return $translated;
 			}
 		}
 
 		// None of loaders contains translation for given message with requested language, skip at next run
-		if ($translated === null) {
-			$this->missingTranslationMessageLocaleMap[$message][$preferredLocale] = true;
-		}
+		$this->missingTranslationMessageLocaleMap[$message][$locale] = true;
 
-		return $translated;
+		return null;
 	}
 
 	private function getLoader(string $loaderServiceName): Loader

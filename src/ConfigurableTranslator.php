@@ -2,21 +2,13 @@
 
 namespace Modette\Translation;
 
+/**
+ * Allows LocaleConfigurator set Translator locale as not all LocaleConfigurator changes immediately appear in corresponding LocaleResolver
+ * Hidden from Translator interface to prevent misuse
+ */
 interface ConfigurableTranslator extends Translator
 {
 
-	public function setDefaultLocale(string $defaultLocale): void;
-
 	public function setCurrentLocale(string $currentLocale): void;
-
-	/**
-	 * @param string[] $localeWhitelist
-	 */
-	public function setLocaleWhiteList(array $localeWhitelist): void;
-
-	/**
-	 * @param string[] $fallbackLocales
-	 */
-	public function setFallbackLocales(array $fallbackLocales): void;
 
 }

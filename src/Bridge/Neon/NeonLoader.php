@@ -12,8 +12,9 @@ class NeonLoader implements Loader
 	 */
 	public function loadAllMessages(string $locale): array
 	{
-		// TODO: Implement loadAllMessages() method.
-		//  - validovat, že všechny překlady jsou string
+		// todo - načíst překlady
+		//		- klíče musí být string
+		//		- překlady musí odpovídat patternu pro daný jazyk MessageFormatter:validatePattern
 		return [];
 	}
 

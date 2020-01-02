@@ -5,9 +5,6 @@ namespace Modette\Translation\Resource;
 interface Catalogue
 {
 
-	/**
-	 * @param string[] $localeList
-	 */
-	public function getMessage(string $message, array $localeList): ?string;
+	public function getMessage(string $message, string $locale): ?string;
 
 }

@@ -3,7 +3,6 @@
 namespace Modette\Translation\Bridge\Nette\Router;
 
 use Modette\Translation\Locale\LocaleResolver;
-use Modette\Translation\Translator;
 use Nette\Http\IRequest;
 use Nette\Routing\Router;
 
@@ -17,7 +16,7 @@ final class RouterLocaleResolver implements LocaleResolver
 	private $router;
 
 	/** @var string */
-	private $parameter = 'locale';
+	private $parameterName = 'locale';
 
 	public function __construct(IRequest $request, Router $router)
 	{
@@ -25,17 +24,20 @@ final class RouterLocaleResolver implements LocaleResolver
 		$this->router = $router;
 	}
 
-	public function setParameterName(string $parameter): void
+	public function setParameterName(string $parameterName): void
 	{
-		$this->parameter = $parameter;
+		$this->parameterName = $parameterName;
 	}
 
-	public function resolve(Translator $translator): ?string
+	/**
+	 * @param string[] $localeWhitelist
+	 */
+	public function resolve(array $localeWhitelist): ?string
 	{
 		$match = $this->router->match($this->request);
 
-		if ($match !== null && array_key_exists($this->parameter, $match)) {
-			return $match[$this->parameter];
+		if ($match !== null && array_key_exists($this->parameterName, $match)) {
+			return $match[$this->parameterName];
 		}
 
 		return null;

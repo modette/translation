@@ -2,7 +2,7 @@
 
 namespace Modette\Translation\Locale;
 
-final class MultiConfigurator implements LocaleConfigurator
+final class MultiLocaleConfigurator implements LocaleConfigurator
 {
 
 	/** @var LocaleConfigurator[] */

@@ -3,7 +3,6 @@
 namespace Modette\Translation\Bridge\Nette\Http;
 
 use Modette\Translation\Locale\LocaleResolver;
-use Modette\Translation\Translator;
 use Nette\Http\IResponse;
 use Nette\Http\Session;
 
@@ -11,7 +10,6 @@ final class SessionLocaleResolver implements LocaleResolver
 {
 
 	public const SECTION = 'modette.translation';
-
 	public const PARAMETER = 'locale';
 
 	/** @var IResponse */
@@ -26,13 +24,15 @@ final class SessionLocaleResolver implements LocaleResolver
 		$this->session = $session;
 	}
 
-	public function resolve(Translator $translator): ?string
+	/**
+	 * @param string[] $localeWhitelist
+	 */
+	public function resolve(array $localeWhitelist): ?string
 	{
 		if (!$this->session->isStarted() && $this->response->isSent()) {
 			trigger_error(
 				sprintf(
-					'The advice of session locale resolver is required but the session has not been started and headers had been already sent. ' .
-					'Either start your sessions earlier or disabled the "%s".',
+					'Session has not been started and headers had been already sent. Either start your session earlier or disabled the "%s".',
 					self::class
 				),
 				E_USER_WARNING

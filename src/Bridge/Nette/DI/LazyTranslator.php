@@ -3,8 +3,13 @@
 namespace Modette\Translation\Bridge\Nette\DI;
 
 use Modette\Translation\Translator;
+use Modette\Translation\TranslatorHolder;
 use Nette\DI\Container;
 
+/**
+ * @internal
+ * @see TranslatorHolder
+ */
 final class LazyTranslator implements Translator
 {
 
@@ -36,17 +41,22 @@ final class LazyTranslator implements Translator
 		return $this->getTranslator()->getCurrentLocale();
 	}
 
+	public function getDefaultLocale(): string
+	{
+		return $this->getTranslator()->getDefaultLocale();
+	}
+
 	/**
 	 * @return string[]
 	 */
-	public function getLocaleWhiteList(): array
+	public function getLocaleWhitelist(): array
 	{
-		return $this->getTranslator()->getLocaleWhiteList();
+		return $this->getTranslator()->getLocaleWhitelist();
 	}
 
 	private function getTranslator(): Translator
 	{
-		if ($this->translator = null) {
+		if ($this->translator === null) {
 			$translator = $this->container->getService($this->translatorServiceName);
 			assert($translator instanceof Translator);
 			$this->translator = $translator;

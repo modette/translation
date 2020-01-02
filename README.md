@@ -1,0 +1,14 @@
+TODO
+    - readme
+    - docs
+        - usage
+        - which parts of ICU INTL are implemented http://userguide.icu-project.org/locale
+    - changelog
+    - cache invalidation - when new translations are added
+        - during development can be files checked for changes
+        - new translations added to database in runtime??
+    - locale
+        - support all parts - language + country/region + script + variant
+        - fallback language can have fallback too (cyclic references possible)
+    - translator
+        - pre-compute possible locales?

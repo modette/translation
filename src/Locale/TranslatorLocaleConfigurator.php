@@ -5,11 +5,10 @@ namespace Modette\Translation\Locale;
 use Modette\Translation\ConfigurableTranslator;
 
 /**
- * Calls to some configurators (CookieLocaleConfigurator) don't appear immediately in corresponding resolver
- * This bridge set locale also as current translator locale to bypass the problem
- * It could override current locale if it was already computed by resolvers
+ * Calls to some configurators (cookies) don't appear immediately in corresponding resolver
+ * This bridge set locale as current translator locale to bypass the problem
  */
-final class TranslatorBridgeConfigurator implements LocaleConfigurator
+final class TranslatorLocaleConfigurator implements LocaleConfigurator
 {
 
 	/** @var ConfigurableTranslator */

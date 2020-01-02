@@ -12,9 +12,11 @@ interface Translator
 
 	public function getCurrentLocale(): string;
 
+	public function getDefaultLocale(): string;
+
 	/**
 	 * @return string[]
 	 */
-	public function getLocaleWhiteList(): array;
+	public function getLocaleWhitelist(): array;
 
 }

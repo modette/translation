@@ -2,9 +2,8 @@
 
 namespace Modette\Translation\Bridge\Nette\DI;
 
+use Modette\Translation\Locale\LocaleHelper;
 use Modette\Translation\Locale\LocaleResolver;
-use Modette\Translation\Translator;
-use Modette\Translation\Utils\LocaleHelper;
 use Nette\DI\Container;
 
 final class LazyMultiLocaleResolver implements LocaleResolver
@@ -25,15 +24,22 @@ final class LazyMultiLocaleResolver implements LocaleResolver
 		$this->resolverServiceNames = $resolverServiceNames;
 	}
 
-	public function resolve(Translator $translator): ?string
+	/**
+	 * @param string[] $localeWhitelist
+	 */
+	public function resolve(array $localeWhitelist): ?string
 	{
 		foreach ($this->resolverServiceNames as $resolverServiceName) {
-			/** @var LocaleResolver $resolver */
 			$resolver = $this->container->getService($resolverServiceName);
-			$locale = $resolver->resolve($translator);
+			assert($resolver instanceof LocaleResolver);
+			$locale = $resolver->resolve($localeWhitelist);
 
-			if ($locale !== null && LocaleHelper::isWhitelisted($locale, $translator->getLocaleWhiteList())) {
-				return $locale;
+			if ($locale !== null) {
+				$locale = LocaleHelper::normalize($locale);
+
+				if (LocaleHelper::isWhitelisted($locale, $localeWhitelist)) {
+					return $locale;
+				}
 			}
 		}
 

@@ -1,0 +1,2 @@
+extensions:
+	modette.translation: Modette\Translation\Bridge\Nette\DI\TranslationExtension

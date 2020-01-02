@@ -2,6 +2,8 @@
 
 namespace Modette\Translation;
 
+use Modette\Exceptions\Logic\InvalidStateException;
+
 final class TranslatorHolder
 {
 
@@ -11,28 +13,35 @@ final class TranslatorHolder
 	/** @var static|null */
 	private static $instSelf;
 
+	/** @var Translator */
+	private $instTranslator;
+
 	public static function setTranslator(Translator $translator): void
 	{
 		self::$translator = $translator;
 	}
 
-	/**
-	 * @return static
-	 */
 	public static function getInstance(): self
 	{
-		if (static::$instSelf === null) {
-			if (static::$translator === null) {
-				throw new InvalidStateException(sprintf('Call %s::setTranslator() to use %s::getInstance()', static::class, static::class));
+		if (self::$instSelf === null) {
+			if (self::$translator === null) {
+				throw new InvalidStateException(sprintf('Call %s::setTranslator() to use %s::getInstance()', self::class, self::class));
 			}
-			static::$instSelf = new static();
+
+			self::$instSelf = new self(self::$translator);
 		}
-		return static::$instSelf;
+
+		return self::$instSelf;
+	}
+
+	private function __construct(Translator $translator)
+	{
+		$this->instTranslator = $translator;
 	}
 
 	public function getTranslator(): Translator
 	{
-		return self::$translator;
+		return $this->instTranslator;
 	}
 
 }

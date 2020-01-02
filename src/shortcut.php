@@ -1,18 +1,18 @@
 <?php declare(strict_types = 1);
 
-use Modette\Translation\Translator;
-use Modette\Translation\TranslatorHolder;
+namespace Modette\Translation;
 
-/** @var Translator|null $translator */
-$translator = null;
-
+/**
+ * @param mixed[] $parameters
+ */
 function __(string $message, array $parameters, ?string $locale = null): string
 {
-	global $translator;
-	
-	if ($translator === null) {
-		$translator = TranslatorHolder::getInstance()->getTranslator();
+	if (!isset($GLOBALS[Translator::class])) {
+		$GLOBALS[Translator::class] = TranslatorHolder::getInstance()->getTranslator();
 	}
+
+	$translator = $GLOBALS[Translator::class];
+	assert($translator instanceof Translator);
 
 	return $translator->translate($message, $parameters, $locale);
 }

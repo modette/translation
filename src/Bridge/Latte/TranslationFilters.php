@@ -16,7 +16,10 @@ final class TranslationFilters
 		$this->translator = $translator;
 	}
 
-	public function translate(FilterInfo $filterInfo, $message, array $parameters = [], ?string $locale = null): string
+	/**
+	 * @param mixed[] $parameters
+	 */
+	public function translate(FilterInfo $filterInfo, string $message, array $parameters = [], ?string $locale = null): string
 	{
 		return $this->translator->translate($message, $parameters, $locale);
 	}

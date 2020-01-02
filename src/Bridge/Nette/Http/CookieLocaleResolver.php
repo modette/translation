@@ -2,9 +2,9 @@
 
 namespace Modette\Translation\Bridge\Nette\Http;
 
+use Modette\Translation\Exception\MalformedLocaleException;
+use Modette\Translation\Locale\LocaleHelper;
 use Modette\Translation\Locale\LocaleResolver;
-use Modette\Translation\Translator;
-use Modette\Translation\Utils\LocaleHelper;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 
@@ -25,19 +25,30 @@ final class CookieLocaleResolver implements LocaleResolver
 		$this->response = $response;
 	}
 
-	public function resolve(Translator $translator): ?string
+	/**
+	 * @param string[] $localeWhitelist
+	 */
+	public function resolve(array $localeWhitelist): ?string
 	{
 		$locale = $this->request->getCookie(self::COOKIE_KEY);
 
-		// Remove invalid cookie
-		try {
-			$locale !== null && LocaleHelper::checkValid($locale);
-		} catch (\Throwable $error) { //TODO - specific exception
+		if ($locale === null) {
+			return null;
+		}
+
+		if (!is_string($locale)) {
 			$this->response->deleteCookie(self::COOKIE_KEY);
 			return null;
 		}
 
-		return $locale ? (string) $locale : null;
+		try {
+			LocaleHelper::validate($locale);
+		} catch (MalformedLocaleException $error) {
+			$this->response->deleteCookie(self::COOKIE_KEY);
+			return null;
+		}
+
+		return $locale;
 	}
 
 }

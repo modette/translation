@@ -5,6 +5,13 @@ namespace Modette\Translation\Locale;
 interface LocaleConfigurator
 {
 
+	/**
+	 * Stores locale so it could be restored by corresponding LocaleResolver
+	 * Can also set locale as current Translator locale
+	 *
+	 * @see TranslatorLocaleConfigurator sets Translator curent locale
+	 * @see MultiLocaleConfigurator calls multiple configurators
+	 */
 	public function configure(string $locale): void;
 
 }

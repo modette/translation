@@ -2,6 +2,7 @@
 
 namespace Modette\Translation\Bridge\Nette\Localization;
 
+use Modette\Exceptions\Logic\InvalidArgumentException;
 use Modette\Translation\Translator;
 use Nette\Localization\ITranslator;
 
@@ -17,7 +18,8 @@ final class NetteTranslator implements ITranslator
 	}
 
 	/**
-	 * @param mixed ...$parameters ['message', 'parameters'], 'locale'
+	 * @param mixed $message
+	 * @param mixed ...$parameters ['parameters', 'array'], 'locale'
 	 */
 	public function translate($message, ...$parameters): string
 	{
@@ -28,18 +30,15 @@ final class NetteTranslator implements ITranslator
 		$messageParameters = $parameters[0] ?? [];
 
 		if (!is_array($messageParameters)) {
-			// nette/forms gives null parameter by default
 			if ($messageParameters === null) {
+				// nette/forms gives null parameter by default
 				$messageParameters = [];
-			}
-
-			// Count parameter, used in nette/forms
-			if (is_int($messageParameters) || is_float($messageParameters)) {
-				//TODO - maybe sprintf %s support?? - get catalogue seems as easiest way
+			} elseif (is_int($messageParameters) || is_float($messageParameters)) {
+				// Count parameter, used in nette/forms
 				$messageParameters = ['count' => $messageParameters];
+			} else {
+				throw new InvalidArgumentException('Unsupported type of parameter given.');
 			}
-
-			throw new InvalidArgumentException('Unsupported type of parameter given.');
 		}
 
 		$locale = $parameters[1] ?? null;

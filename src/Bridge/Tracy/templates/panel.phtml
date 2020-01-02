@@ -1,0 +1,40 @@
+<?php declare(strict_types = 1);
+
+use Modette\Translation\Logging\MissingResource;
+
+/** @var string $currentLocale */
+/** @var string $defaultLocale */
+/** @var string[] $localeWhitelist */
+/** @var MissingResource[] $missingResources */
+
+?>
+<h1>Translator</h1>
+
+<div class="tracy-inner">
+	<div class="tracy-inner-container">
+		<h2>Settings</h2>
+		Current locale: <b><?= $currentLocale ?></b><br>
+		Default locale: <b><?= $defaultLocale ?></b><br>
+		Whitelist: <?= implode(', ', $localeWhitelist) ?><br>
+	</div>
+	<?php if ($missingResources !== []): ?>
+		<div class="tracy-inner-container">
+			<h2>Missing resources</h2>
+			<table>
+				<?php foreach ($missingResources as $resource): ?>
+					<tr>
+						<td>
+							<?php
+							echo $resource->getMessage();
+							$locale = $resource->getLocale();
+							if ($locale !== $defaultLocale) {
+								echo ' (<b>' . $locale . '</b>)';
+							}
+							?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+		</div>
+	<?php endif; ?>
+</div>
