@@ -2,6 +2,7 @@
 
 namespace Tests\Modette\Translation\Unit\Locale;
 
+use Modette\Translation\Exception\MalformedLocaleException;
 use Modette\Translation\Locale\LocaleHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -27,6 +28,33 @@ final class LocaleHelperTest extends TestCase
 			['cs-CZ'],
 			['en'],
 			['en-US'],
+		];
+	}
+
+	/**
+	 * @dataProvider providerValidateFailure
+	 */
+	public function testValidateUnknownFormat(string $locale, string $message): void
+	{
+		$this->expectException(MalformedLocaleException::class);
+		$this->expectExceptionMessage($message);
+
+		LocaleHelper::validate($locale);
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public function providerValidateFailure(): array
+	{
+		return [
+			['+ěšč', 'Invalid "+ěšč" locale.'],
+			['En', 'Invalid "En" locale, use "en" format instead.'],
+			['EN', 'Invalid "EN" locale, use "en" format instead.'],
+			['EN_us', 'Invalid "EN_us" locale, use "en-US" format instead.'],
+			['en_us', 'Invalid "en_us" locale, use "en-US" format instead.'],
+			['_en_us', 'Invalid "_en_us" locale, use "en-US" format instead.'],
+			['en-us-', 'Invalid "en-us-" locale, use "en-US" format instead.'],
 		];
 	}
 
@@ -82,15 +110,6 @@ final class LocaleHelperTest extends TestCase
 	}
 
 	/**
-	 * @param string[] $whitelist
-	 * @dataProvider providerIsNotWhitelisted
-	 */
-	public function testIsNotWhitelisted(string $locale, array $whitelist): void
-	{
-		self::assertFalse(LocaleHelper::isWhitelisted($locale, $whitelist));
-	}
-
-	/**
 	 * @return mixed[]
 	 */
 	public function providerIsWhitelisted(): array
@@ -109,6 +128,15 @@ final class LocaleHelperTest extends TestCase
 				['en-GB'],
 			],
 		];
+	}
+
+	/**
+	 * @param string[] $whitelist
+	 * @dataProvider providerIsNotWhitelisted
+	 */
+	public function testIsNotWhitelisted(string $locale, array $whitelist): void
+	{
+		self::assertFalse(LocaleHelper::isWhitelisted($locale, $whitelist));
 	}
 
 	/**

@@ -3,7 +3,6 @@
 namespace Modette\Translation;
 
 use Modette\Exceptions\Logic\InvalidStateException;
-use Modette\Exceptions\Logic\ShouldNotHappenException;
 use Modette\Translation\Exception\LocaleNotWhitelistedException;
 use Modette\Translation\Formatting\MessageFormatter;
 use Modette\Translation\Locale\LocaleHelper;
@@ -125,7 +124,6 @@ final class DefaultTranslator implements ConfigurableTranslator
 		$translatedMessage = null;
 		$messageLocale = $locale;
 
-		//TODO - kešovat, v kterém jazyce překlad není?
 		foreach ($possibleLocales as $messageLocale) {
 			$translatedMessage = $this->catalogue->getMessage($message, $messageLocale);
 

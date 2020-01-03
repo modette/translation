@@ -5,12 +5,29 @@ namespace Modette\Translation\Resource;
 final class MultiLoader implements Loader
 {
 
+	/** @var Loader[] */
+	private $loaders;
+
 	/**
-	 * @inheritDoc
+	 * @param Loader[] $loaders
+	 */
+	public function __construct(array $loaders)
+	{
+		$this->loaders = $loaders;
+	}
+
+	/**
+	 * @return string[]
 	 */
 	public function loadAllMessages(string $locale): array
 	{
-		// TODO: Implement loadAllMessages() method.
+		$messagesByLoader = [];
+
+		foreach ($this->loaders as $loader) {
+			$messagesByLoader[] = $loader->loadAllMessages($locale);
+		}
+
+		return $messagesByLoader === [] ? [] : array_merge(...$messagesByLoader);
 	}
 
 }

@@ -6,7 +6,7 @@ TODO
     - changelog
     - cache invalidation - when new translations are added
         - during development can be files checked for changes
-        - new translations added to database in runtime??
+        - new translations added to database at runtime
     - locale
         - support all parts - language + country/region + script + variant
         - fallback language can have fallback too (cyclic references possible)

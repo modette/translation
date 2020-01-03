@@ -24,10 +24,10 @@
 	},
 	"require-dev": {
 		"ext-intl": "*",
+		"contributte/di": "^0.4.1",
 		"latte/latte": "^2.5.0",
 		"nette/application": "^3.0.0",
 		"nette/caching": "^3.0.0",
-		"nette/di": "^3.0.0",
 		"ninjify/qa": "^0.10.0",
 		"pepakriz/phpstan-exception-rules": "^0.10.1",
 		"phpstan/extension-installer": "^1.0.0",

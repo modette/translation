@@ -19,8 +19,4 @@
 	<rule ref="Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps">
 		<exclude-pattern>src/shortcut.php</exclude-pattern>
 	</rule>
-
-	<rule ref="Generic.Files.InlineHTML.Found">
-		<exclude-pattern>src/Bridge/Tracy/templates</exclude-pattern>
-	</rule>
 </ruleset>

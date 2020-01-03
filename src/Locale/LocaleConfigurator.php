@@ -8,6 +8,7 @@ interface LocaleConfigurator
 	/**
 	 * Stores locale so it could be restored by corresponding LocaleResolver
 	 * Can also set locale as current Translator locale
+	 * Should be called only with valid, normalized locale
 	 *
 	 * @see TranslatorLocaleConfigurator sets Translator curent locale
 	 * @see MultiLocaleConfigurator calls multiple configurators

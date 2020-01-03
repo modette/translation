@@ -12,10 +12,10 @@ lint: ## Check PHP files syntax
 	vendor/bin/parallel-lint --blame --colors src tests
 
 cs: ## Check PHP files coding style
-	vendor/bin/phpcs --cache=var/tmp/codesniffer.dat --standard=ruleset.xml --extensions=php,phtml --colors -nsp src tests
+	vendor/bin/phpcs --cache=var/tmp/codesniffer.dat --standard=ruleset.xml --extensions=php --colors -nsp src tests
 
 csf: ## Fix PHP files coding style
-	vendor/bin/phpcbf --cache=var/tmp/codesniffer.dat --standard=ruleset.xml --extensions=php,phtml --colors -nsp src tests
+	vendor/bin/phpcbf --cache=var/tmp/codesniffer.dat --standard=ruleset.xml --extensions=php --colors -nsp src tests
 
 phpstan: ## Analyse code with PHPStan
 	vendor/bin/phpstan analyse -l 8 -c phpstan.src.neon src

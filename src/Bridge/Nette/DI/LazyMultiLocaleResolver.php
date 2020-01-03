@@ -15,10 +15,13 @@ final class LazyMultiLocaleResolver implements LocaleResolver
 	/** @var string[] */
 	private $resolverServiceNames;
 
+	/** @var LocaleResolver[] */
+	private $resolverMap = [];
+
 	/**
 	 * @param string[] $resolverServiceNames
 	 */
-	public function __construct(Container $container, array $resolverServiceNames)
+	public function __construct(array $resolverServiceNames, Container $container)
 	{
 		$this->container = $container;
 		$this->resolverServiceNames = $resolverServiceNames;
@@ -30,8 +33,7 @@ final class LazyMultiLocaleResolver implements LocaleResolver
 	public function resolve(array $localeWhitelist): ?string
 	{
 		foreach ($this->resolverServiceNames as $resolverServiceName) {
-			$resolver = $this->container->getService($resolverServiceName);
-			assert($resolver instanceof LocaleResolver);
+			$resolver = $this->getResolver($resolverServiceName);
 			$locale = $resolver->resolve($localeWhitelist);
 
 			if ($locale !== null) {
@@ -44,6 +46,17 @@ final class LazyMultiLocaleResolver implements LocaleResolver
 		}
 
 		return null;
+	}
+
+	private function getResolver(string $resolverServiceName): LocaleResolver
+	{
+		if (!isset($this->resolverMap[$resolverServiceName])) {
+			$resolver = $this->container->getService($resolverServiceName);
+			assert($resolver instanceof LocaleResolver);
+			$this->resolverMap[$resolverServiceName] = $resolver;
+		}
+
+		return $this->resolverMap[$resolverServiceName];
 	}
 
 }
