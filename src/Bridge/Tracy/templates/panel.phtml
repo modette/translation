@@ -19,21 +19,30 @@ use Modette\Translation\Logging\MissingResource;
 	</div>
 	<?php if ($missingResources !== []): ?>
 		<div class="tracy-inner-container">
-			<h2>Missing resources</h2>
+			<h2>Missing resources (<?= count($missingResources) ?>)</h2>
 			<table>
+				<thead>
+				<tr>
+					<th>Message</th>
+					<th>Count</th>
+					<th>Locales</th>
+				</tr>
+				</thead>
+				<tbody>
 				<?php foreach ($missingResources as $resource): ?>
 					<tr>
 						<td>
-							<?php
-							echo $resource->getMessage();
-							$locale = $resource->getLocale();
-							if ($locale !== $defaultLocale) {
-								echo ' (<b>' . $locale . '</b>)';
-							}
-							?>
+							<?= $resource->getMessage() ?>
+						</td>
+						<td>
+							<?= $resource->getCount() ?>
+						</td>
+						<td>
+							<?= implode(', ', $resource->getLocales()) ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>
+				</tbody>
 			</table>
 		</div>
 	<?php endif; ?>

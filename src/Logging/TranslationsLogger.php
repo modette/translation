@@ -23,7 +23,13 @@ final class TranslationsLogger
 
 	public function addMissingResource(string $locale, string $message): void
 	{
-		$this->missingResources[] = new MissingResource($locale, $message);
+		$hash = md5($message);
+
+		if (isset($this->missingResources[$hash])) {
+			$this->missingResources[$hash]->incrementCount($locale);
+		} else {
+			$this->missingResources[$hash] = new MissingResource($locale, $message);
+		}
 
 		if ($this->logger === null) {
 			return;

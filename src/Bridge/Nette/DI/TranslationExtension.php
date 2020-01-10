@@ -3,6 +3,7 @@
 namespace Modette\Translation\Bridge\Nette\DI;
 
 use Contributte\DI\Helper\ExtensionDefinitionsHelper;
+use Latte\Engine;
 use Modette\Translation\Bridge\Latte\TranslationFilters;
 use Modette\Translation\Bridge\Latte\TranslationMacros;
 use Modette\Translation\Bridge\Nette\Caching\CachedCatalogue;
@@ -55,15 +56,27 @@ final class TranslationExtension extends CompilerExtension
 				'whitelist' => Expect::listOf('string'),
 				'fallback' => Expect::arrayOf('string'),
 			]),
-			'loaders' => Expect::arrayOf(Expect::anyOf(
-				Expect::string(), Expect::array(), Expect::type(Statement::class)
-			)),
-			'resolvers' => Expect::arrayOf(Expect::anyOf(
-				Expect::string(), Expect::array(), Expect::type(Statement::class)
-			)),
-			'configurators' => Expect::arrayOf(Expect::anyOf(
-				Expect::string(), Expect::array(), Expect::type(Statement::class)
-			)),
+			'loaders' => Expect::arrayOf(
+				Expect::anyOf(
+					Expect::string(),
+					Expect::array(),
+					Expect::type(Statement::class)
+				)
+			),
+			'resolvers' => Expect::arrayOf(
+				Expect::anyOf(
+					Expect::string(),
+					Expect::array(),
+					Expect::type(Statement::class)
+				)
+			),
+			'configurators' => Expect::arrayOf(
+				Expect::anyOf(
+					Expect::string(),
+					Expect::array(),
+					Expect::type(Statement::class)
+				)
+			),
 		]);
 	}
 
@@ -146,7 +159,7 @@ final class TranslationExtension extends CompilerExtension
 			->setType(Loader::class)
 			->setAutowired(false);
 
-		$loaderCacheDefinition = $builder->addDefinition($this->prefix('loaderCache'))
+		$loaderCacheDefinition = $builder->addDefinition($this->prefix('loader.cache'))
 			->setFactory(ArrayCacheLoader::class, [$lazyLoaderDefinition])
 			->setType(Loader::class)
 			->setAutowired(false);
@@ -158,7 +171,7 @@ final class TranslationExtension extends CompilerExtension
 			->setType(Catalogue::class)
 			->setAutowired(false);
 
-		$catalogueCacheDefinition = $builder->addDefinition($this->prefix('catalogueCache'))
+		$catalogueCacheDefinition = $builder->addDefinition($this->prefix('catalogue.cache'))
 			->setFactory(ArrayCacheCatalogue::class, [$catalogueDefinition])
 			->setType(Catalogue::class)
 			->setAutowired(false);
@@ -166,7 +179,7 @@ final class TranslationExtension extends CompilerExtension
 		// Message formatter
 
 		$messageFormatterDefinition = $builder->addDefinition($this->prefix('formatter'))
-			->setFactory('?::create()', [MessageFormatterFactory::class])
+			->setFactory('?::create()', [new PhpLiteral(MessageFormatterFactory::class)])
 			->setType(MessageFormatter::class)
 			->setAutowired(false);
 
@@ -182,9 +195,9 @@ final class TranslationExtension extends CompilerExtension
 		$translatorPrefix = $this->prefix('translator');
 		$translatorDefinition = $builder->addDefinition($translatorPrefix)
 			->setFactory(
-				'?::fromValidLocales(?, ?, ?, ?, ?, ?)',
+				'?::fromValidLocales(?, ?, ?, ?, ?, ?, ?)',
 				[
-					DefaultTranslator::class,
+					new PhpLiteral(DefaultTranslator::class),
 					$config->locale->default,
 					$config->locale->whitelist,
 					$config->locale->fallback,
@@ -194,7 +207,7 @@ final class TranslationExtension extends CompilerExtension
 					$loggerDefinition,
 				]
 			)
-			->setType(Translator::class)
+			->setType(ConfigurableTranslator::class)
 			->setAutowired([Translator::class, ConfigurableTranslator::class]);
 
 		$builder->addDefinition($this->prefix('translator.nette'))
@@ -237,9 +250,13 @@ final class TranslationExtension extends CompilerExtension
 				->setAutowired(false);
 
 			$latteFactoryDefinition->getResultDefinition()
-				->addSetup('?->onCompile[] = function($engine) { ?::install($engine->getCompiler()); }', ['@self', new PhpLiteral(TranslationMacros::class)])
+				->addSetup('?->onCompile[] = static function(? $engine) { ?::install($engine->getCompiler()); }', [
+					'@self',
+					new PhpLiteral(Engine::class),
+					new PhpLiteral(TranslationMacros::class),
+				])
 				->addSetup('?->addProvider(?, ?)', ['@self', 'translator', $builder->getDefinition($this->prefix('translator'))])
-				->addSetup('?->addFilter', ['@self', 'translate', [$latteFiltersDefinition, 'translate']]);
+				->addSetup('?->addFilter(?, ?)', ['@self', 'translate', [$latteFiltersDefinition, 'translate']]);
 		}
 	}
 
@@ -260,7 +277,10 @@ final class TranslationExtension extends CompilerExtension
 		// Shortcut
 
 		if ($config->holder->enabled) {
-			$initialize->addBody('?::setTranslator(?);', [TranslatorHolder::class, $this->prefix('translator.lazy')]);
+			$initialize->addBody('?::setTranslator($this->getService(?));', [
+				new PhpLiteral(TranslatorHolder::class),
+				$this->prefix('translator.lazy'),
+			]);
 		}
 	}
 

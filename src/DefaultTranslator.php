@@ -54,6 +54,10 @@ final class DefaultTranslator implements ConfigurableTranslator
 		TranslationsLogger $logger
 	)
 	{
+		if (!in_array($defaultLocale, $localeWhiteList, true)) {
+			$localeWhiteList[] = $defaultLocale;
+		}
+
 		$this->defaultLocale = $defaultLocale;
 		$this->localeWhitelist = $localeWhiteList;
 		$this->fallbackLocales = $fallbackLocales;
@@ -160,7 +164,7 @@ final class DefaultTranslator implements ConfigurableTranslator
 			throw new InvalidStateException(sprintf(
 				'Current locale already set. Ensure you call %s::%s only once and before translator is first used.',
 				ConfigurableTranslator::class,
-				__METHOD__
+				'setCurrentLocale()'
 			));
 		}
 

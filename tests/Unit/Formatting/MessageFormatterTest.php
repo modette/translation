@@ -63,6 +63,7 @@ final class MessageFormatterTest extends TestCase
 	public function providerNumber(): array
 	{
 		return [
+			['en-US', 'I have {0} apples.', [3], 'I have 3 apples.'],
 			['en-US', 'I have {0, number, integer} apples.', [3], 'I have 3 apples.'],
 			['en_US', 'I have {number_apples, number, integer} apples.', ['number_apples' => 3], 'I have 3 apples.'],
 			// TODO - another languages
